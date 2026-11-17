@@ -1,0 +1,48 @@
+name = "r2-image-hub"
+main = "src/index.ts"
+compatibility_date = "2022-05-15"
+# Honor R2 list({include: []}) to avoid loading unnecessary metadata into Worker memory
+# when listing large directories (up to 1000 objects per page).
+compatibility_flags = ["r2_list_honor_include", "streams_enable_constructors"]
+# Set this to false if you only serve via a custom domain and want to disable *.workers.dev.
+# Note that *.workers.dev routes don't support native worker-level caching: https://developers.cloudflare.com/workers/runtime-apis/cache/
+workers_dev = false
+
+[vars]
+# The `access-control-allow-origin` header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+# Optional, the `access-control-allow-origin` header is omitted if unset, which blocks all cross-origin requests.
+ALLOWED_ORIGINS = ""
+
+# The `cache-control` header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control.
+# Optional, the `cache-control` header is omitted if unset, which would NOT disable caching: https://developers.cloudflare.com/workers/runtime-apis/cache/#headers
+# For example, you can disable all cache by setting this to `no-store`.
+CACHE_CONTROL = "max-age=2592000"
+
+# Enable to show a directory listing on paths ending in /
+DIRECTORY_LISTING = true
+
+# The number of items to show per page in directory listings.
+# Listings may also return less if the listing API call reaches a size limit.
+# Maximum of 1000.
+ITEMS_PER_PAGE = 1000
+
+# Enable to hide files or directories beginning with . from directory listings.
+HIDE_HIDDEN_FILES = true
+
+# Directory pages include live visibility and administrator state, so keep them uncached by default.
+DIRECTORY_CACHE_CONTROL = "no-store"
+
+# Set debugging log enabled.
+LOGGING = true
+
+# Set the number of retries allowed for each R2 operation (-1 for unlimited).
+R2_RETRIES = 0
+
+[observability]
+enabled = true
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "your-r2-bucket-name"         # Replace with your Cloudflare R2 bucket name
+preview_bucket_name = "your-r2-bucket-name" # Replace with your preview R2 bucket name
+#jurisdiction = "eu"                        # Optional: "eu" or "us" if your bucket uses jurisdiction restrictions
